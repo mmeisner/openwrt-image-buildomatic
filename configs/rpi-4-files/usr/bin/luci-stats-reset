@@ -1,0 +1,11 @@
+#!/bin/sh
+# Delete ALL collected statistics and restart luci-statistics and collectd
+# Useful after changing RRD config values of /etc/config/luci_statistics
+
+/etc/init.d/luci_statistics stop
+/etc/init.d/collectd stop
+
+rm -rf /tmp/collectd.conf /tmp/rrd/*
+
+/etc/init.d/collectd start
+/etc/init.d/luci_statistics start
