@@ -1,0 +1,44 @@
+#!/bin/sh
+# Raspberry PI 4 configuration for openwrt-image-buildomatic
+
+# Which target CPU to build image for.
+# See targets here: https://downloads.openwrt.org/snapshots/targets
+TARGET=bcm27xx/bcm2711
+
+# Currently there is only the "rpi-4" build profile for this TARGET
+PROFILE="rpi-4"
+
+RELEASE="21.02.0-rc1"
+
+# See https://openwrt.org/packages/start
+#
+# - irqbalance package distributes hardware interrupts across
+#   processors on a multiprocessor system in order to increase performance.
+# - bcm27xx-eeprom package provides rpi-eeprom-update, rpi-eeprom-config
+#   commands for the RPi-4 eeprom
+# - netperf installs /usr/bin/netserver and is used by various speedtest scripts
+#   See https://forum.openwrt.org/t/package-to-run-speed-test-on-router/16016
+PACKAGES="
+${packages_usb_eth}
+${packages_luci_apps}
+${packages_usb_storage}
+bcm27xx-eeprom
+irqbalance
+ethtool
+netperf speedtest-netperf iperf3
+nmap netdiscover arp-scan arp-scan-database
+iptables-mod-geoip
+igmpproxy
+-dnsmasq dnsmasq-full
+-ip-tiny ip-full
+zoneinfo-europe
+procps-ng procps-ng-watch procps-ng-pgrep procps-ng-ps procps-ng-top procps-ng-free
+curl wget rsync file htop lsof less mc tree usbutils bash
+strace
+openssh-sftp-server
+"
+# openssh-server
+FILES="rpi-4-files"
+
+DISABLED_SERVICES="\
+adblock banip collectd ddns fwknopd https-dns-proxy igmpproxy netserver sqm"

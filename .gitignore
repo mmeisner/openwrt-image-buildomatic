@@ -1,0 +1,17 @@
+# general ignores
+*~
+*.html
+
+# IDEs
+.idea/
+
+# python
+__pycache__
+*.pyc
+
+
+# project specific ignores
+openwrt-imagebuilder-*
+openwrt-*.img
+openwrt-*.img.gz
+config-backup*

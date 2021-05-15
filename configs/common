@@ -1,0 +1,56 @@
+#!/bin/sh
+# Common configuration include for openwrt-image-buildomatic
+# This file is ALWAYS read before the device specific file
+# so the device config file can use any of the variables here
+#
+# List of all OpenWRT packages: https://openwrt.org/packages/start
+
+# Latest point release of each main release
+RELEASE_18_06="18.06.9"
+RELEASE_19_07="19.07.7"
+RELEASE_21_02="21.02.0-rc1"
+
+# Popular Luci apps
+# This list is probably only valid for the 21.02 release
+#
+#  luci-mod-rpc is for remote control, see https://openwrt.org/docs/techref/ubus
+packages_luci_apps="
+luci
+luci-theme-openwrt-2020 luci-theme-bootstrap luci-theme-openwrt
+luci-app-uhttpd
+luci-app-commands
+luci-app-wireguard kmod-wireguard wireguard-tools qrencode
+luci-app-acme acme ca-certificates
+luci-app-adblock adblock
+luci-app-fwknopd fwknopd
+luci-app-banip banip
+luci-app-sqm sqm-scripts sqm-scripts-extra
+luci-app-https-dns-proxy https-dns-proxy
+luci-app-ddns
+luci-app-statistics
+  collectd collectd-mod-cpu collectd-mod-irq collectd-mod-thermal
+  collectd-mod-network collectd-mod-sqm collectd-mod-iwinfo collectd-mod-ping
+  collectd-mod-ethstat
+  collectd-mod-processes collectd-mod-exec
+luci-mod-rpc
+"
+
+# luci-app-nlbwmon nlbwmon
+# luci-app-dnscrypt-proxy
+# luci-theme-material has intentionally been left out (it is rather ugly)
+
+# All the most common USB Ethernet adapter kernel drivers
+packages_usb_eth="
+kmod-usb-core kmod-usb-net kmod-mii
+kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-cdc-ether kmod-usb-net-ipheth
+kmod-usb-net-kaweth kmod-usb-net-mcs7830 kmod-usb-net-pegasus kmod-usb-net-rtl8150
+kmod-usb-net-rtl8152 kmod-usb-net-sr9700
+"
+
+# USB storage auto mounting
+packages_usb_storage="
+kmod-fs-exfat kmod-fs-ext4 kmod-fs-ntfs kmod-fuse kmod-usb-storage
+kmod-usb2 kmod-usb2-pci kmod-usb3 kmod-fs-autofs4 kmod-usb-ohci kmod-usb-uhci
+block-mount blockd e2fsprogs fdisk
+"
+

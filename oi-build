@@ -1,0 +1,292 @@
+#!/usr/bin/env bash
+# Script to download and run OpenWRT image builder with some config file
+
+
+###############################################################################
+# OpenWRT target image config defaults
+###############################################################################
+
+# Default configuration (file) to use
+config_name="rpi-4"
+
+# Release to fetch and build (can be "snapshot")
+RELEASE=""
+
+# Which target CPU architecture to build image for.
+# See targets here: https://downloads.openwrt.org/snapshots/targets
+TARGET=""
+
+# What profile (platform/device) to build for this TARGET
+PROFILE=""
+
+FILES=""
+
+DISABLED_SERVICES=""
+
+# See https://openwrt.org/packages/ for list of all packages
+PACKAGES="
+luci luci-app-uhttpd
+luci-theme-bootstrap luci-theme-openwrt luci-theme-openwrt-2020
+luci-app-wireguard kmod-wireguard wireguard-tools
+zoneinfo-europe
+kmod-usb-net-rtl8150 kmod-usb-net-rtl8152
+"
+
+# glob to use for searching for USB SD-card reader device
+dev_usb_sdcard_glob=/dev/disk/by-id/usb-Generic-*-0:0
+
+
+###############################################################################
+# console colors
+###############################################################################
+
+if [ -t 1 ]; then
+    c_red="\e[31m";  c_green="\e[32m"; c_yellow="\e[33m"; c_mag="\e[35m"
+    c_cyan="\e[36m"; c_white="\e[37m"; c_ired="\e[91m";   c_igreen="\e[92m"
+    c_iyellow="\e[93m"; c_imag="\e[95m"; c_icyan="\e[96m"; c_iwhite="\e[97m"
+    c_igrey="\e[90m"; c_reset="\e[0m";   c_bold="\e[1m";   c_inv="\e[7m"
+fi
+echo_run() { echo -e "\$ ${c_green}$*${c_reset}"; if [ -z "${dryrun}" ]; then eval "$*"; else true; fi; }
+echo_run_nodry() { echo -e "\$ ${c_green}$*${c_reset}"; eval "$*"; }
+echo_ok() { echo -e "${c_imag}$*${c_reset}"; }
+echo_note() { echo -e "${c_iyellow}$*${c_reset}"; }
+echo_bold() { echo -e "${c_icyan}$*${c_reset}"; }
+echo_inv() { echo -e "${c_inv}$*${c_reset}"; }
+
+warn() { echo >&2 -e "${c_iyellow}WARNING: $*${c_reset}"; }
+error() { echo >&2 -e "${c_ired}ERROR: $*${c_reset}"; }
+die() { error "$*"; exit 1; }
+verb() { [ -n "${VERBOSE}" ] && echo "$*"; }
+
+###############################################################################
+#
+###############################################################################
+
+openwrt_url=https://downloads.openwrt.org
+
+load_config() {
+    local name=$1
+    . configs/common || die "FAILED to load config from ${f}"
+    for f in configs/${name} configs/${name}.sh; do
+        if [ -f ${f} ]; then
+            . "${f}" || die "FAILED to load config from ${f}"
+            echo "Loaded config ${f}"
+            return 0
+        fi
+    done
+    die "configuration file ${name} not found in configs"
+}
+
+# setup file and directory names of image builder and final image:
+#   target_with_dash
+#   imagebuilder_dir
+#   image_file_base
+#   image_tarball
+init_vars() {
+    echo "Current config:"
+    for v in RELEASE TARGET PROFILE; do
+        printf "  %-10s = %s\n" "${v}" "${!v}"
+        [ -n "${!v}" ] || die "Config variable ${v} has no value"
+    done
+
+    target_with_dash=$(echo "${TARGET}" | tr '/' '-')
+
+    if [ "${RELEASE}" = "snapshot" ]; then
+        tarball=openwrt-imagebuilder-${target_with_dash}.Linux-x86_64.tar.xz
+        url_path="snapshots/targets/${TARGET}/${tarball}"
+    else
+        tarball=openwrt-imagebuilder-${RELEASE}-${target_with_dash}.Linux-x86_64.tar.xz
+        url_path="releases/${RELEASE}/targets/${TARGET}/${tarball}"
+    fi
+    imagebuilder_dir=${tarball%%.tar*}
+}
+
+fetch_image_builder() {
+    echo_note "Downloading ${RELEASE} build from ${url_path}"
+
+    if [ -f "${tarball}" ]; then
+        echo_ok "${tarball} already exists, skipping fetch"
+    else
+        echo_run "wget ${openwrt_url}/${url_path}" || die "wget FAILED"
+    fi
+
+    if [ -d ${imagebuilder_dir} ]; then
+        echo_ok "${imagebuilder_dir} already exists, skipping unpack"
+    else
+        echo_run "tar xf ${tarball}" || die "tar xf FAILED"
+    fi
+}
+
+locate_files_dir() {
+    for d in ../configs .. .; do
+        local path=${d}/${FILES}
+        if [ -d ${path} ]; then
+            echo_note "Using FILES = ${path}"
+            FILES=${path}
+            return 0
+        fi
+    done
+    die "FAILED to locate FILES directory: ${FILES}"
+}
+
+image_build() {
+    echo_inv "make image"
+
+    locate_files_dir
+
+    PACKAGES=$(echo "${PACKAGES}" | tr '\n' ' ')
+    echo_run "make image PROFILE='${PROFILE}' FILES='${FILES}' PACKAGES='${PACKAGES}' DISABLED_SERVICES='${DISABLED_SERVICES}'" ||
+        die "image build FAILED"
+}
+
+image_builder_make_info() {
+    echo_inv "make info"
+
+    echo_run "make info" ||
+        die "image build FAILED"
+
+    local file=bin/targets/${TARGET}/${image_tarball}
+    [ -f ${file} ] &&
+        echo_run "gunzip -f ${file}"
+}
+
+image_write_to_sdcard() {
+    echo_inv "Determining SD card write command"
+
+    # find the USB device that holds the SD-Card:
+    if echo_run "ls -lh ${dev_usb_sdcard_glob}"; then
+        realdev=$(readlink -f ${dev_usb_sdcard_glob})
+        echo_note "Using device ${realdev}"
+    else
+        echo_note "No USB storage device detected:"
+        echo_note "You will have to insert correct USB_STORAGE device in the command below"
+        realdev="USB_STORAGE"
+    fi
+
+    image_names_gz=$(find bin/targets/${TARGET} -name '*factory.img.gz')
+    [ -n "${image_names_gz}" ] &&
+        echo "Unzipping images"
+    for f in ${image_names_gz}; do
+        echo_run "gunzip -f ${f}"
+    done
+
+    echo "Finding factory images for SD card writing:"
+    echo_run "(cd bin/targets/${TARGET} && ls -1 *factory.img)"
+    image_names=$(find bin/targets/${TARGET} -name '*factory.img')
+    image_tarball=$(echo "${image_names}" | head -n1)
+
+    echo_note "Here are the commands for SD card write. Verify before running:"
+    if mount | grep "${realdev}" >/dev/null; then
+        echo_bold "sudo umount ${realdev}?"
+    fi
+    echo_bold "sudo dd if=${imagebuilder_dir}/${image_tarball} \\
+  of=${realdev} \\
+  bs=1M status=progress && sync"
+    [ "${realdev}" = "USB_STORAGE" ] && \
+        echo "where USB_STORAGE is the USB storage device"
+}
+
+###############################################################################
+#
+###############################################################################
+
+usage() {
+    cat <<EOF
+Usage: $(basename ${0##*/}) [OPTION..]
+
+Download OpenWRT image builder and build image from configuration given
+in a simple config file, optionally with additional packages and/or files.
+
+The easiest way to use this builder is to copy and modify one of the config
+files in the configs directory and then launch the script with:
+  $(basename ${0##*/}) -c NAME
+where NAME is the name of the config file you made
+
+Action options:
+  -b      Build the image
+  -i      Run 'make info' instead of building
+  -d      Only download/fetch image builder from ${openwrt_url}
+  -w      Print command for writing image to SD card
+  -n      Dry run (only show commands, don't execute them)
+
+Config options:
+  -c NAME   Use configuration from file in configs/NAME
+            This is a more convenient way than supplying every option
+            as listed below. This option should come *before* any of the
+            advanced options below (if you need overriding of config file)
+  -h        Print this help
+
+Advanced Config options:
+  -r REL    Build specific version
+  -t TARGET Download image builder for TARGET
+            Examples: ath79/generic, bcm27xx/bcm2711
+  -p NAME   What profile to build (if multiple exist). Some targets
+            such as ath79/generic has multiple profiles while the RPi4 target,
+            bcm27xx/bcm2711 only has one.
+            Examples: tplink_archer-c7-v2 (with target th79/generic)
+
+Without any options, info is shown for the last image built.
+EOF
+}
+
+do_fetch=""
+do_build=""
+do_write=""
+do_info=""
+dryrun=""
+while [ -n "$1" ]; do
+    case $1 in
+    -c) config_name=$2; shift
+        load_config common
+        load_config ${config_name}
+        ;;
+    -r) RELEASE=$2; shift ;;
+    -t) TARGET=$2; shift ;;
+    -p) PROFILE=$2; shift ;;
+    -d) do_fetch=yes ;;
+    -b) do_fetch=yes; do_build=yes ;;
+    -i) do_fetch=yes; do_info=yes; ;;
+    -n) dryrun=yes ;;
+    -w) do_write=yes ;;
+    -h) usage; exit 0 ;;
+    *)
+        usage
+        die "Unknown option '$1'"
+        ;;
+    esac
+    shift
+done
+
+init_vars
+
+[ -n "${do_fetch}" ] &&
+    fetch_image_builder
+
+echo_run_nodry "cd ${imagebuilder_dir}"
+
+[ -n "${do_build}" ] &&
+    image_build
+
+if [ -n "${do_write}" ]; then
+    if [ -d bin/targets/${TARGET} ]; then
+        image_write_to_sdcard
+    else
+        error "bin/targets/${TARGET} not found; You have probably not built yet?"
+    fi
+fi
+
+[ -n "${do_info}" ] && image_builder_make_info
+
+echo_inv "Final output info"
+
+if ls ./build_dir/target-*/root* >/dev/null; then
+    cd ..
+    echo_note "Original and modified rootfs is here:"
+    echo_run "ls -d1 ${imagebuilder_dir}/build_dir/target-*/root*"
+    cd - >/dev/null
+fi
+
+if [ -d bin/targets/${TARGET} ]; then
+    echo_run "ls -lh bin/targets/${TARGET}/"
+    echo_note "Final images are in ${imagebuilder_dir}/bin/targets/${TARGET}"
+fi

@@ -1,0 +1,47 @@
+#!/bin/sh
+# Archer C7 v2 configuration for openwrt-image-buildomatic
+
+# Running OpenWRT image builder 18.06 on Ubuntu 20.04 requires at least:
+#     sudo apt install python2 libncurses5-dev
+
+#RELEASE=${RELEASE_18_06}
+#RELEASE=${RELEASE_19_07}
+RELEASE=${RELEASE_21_02}
+
+if [ -z "${RELEASE}" ]; then echo "RELEASE is empty"; return 1; fi
+
+# See targets here: https://downloads.openwrt.org/snapshots/targets
+#
+# device can be built with one of two TARGETs:
+#   ar71xx/generic is usable for releases 17.01, 18.06, 19.07
+#   ath79/generic  is usable for releases               19.07, 21.02
+if echo "${RELEASE}" | grep -q "18.06"; then
+    TARGET=ar71xx/generic
+    PROFILE="archer-c7-v2"
+else
+    TARGET=ath79/generic
+    PROFILE="tplink_archer-c7-v2"
+fi
+
+# This package list works for releases 18.06, 19.07 aND 21.02
+PACKAGES="
+luci
+luci-theme-bootstrap luci-theme-openwrt
+luci-app-uhttpd
+luci-app-wireguard kmod-wireguard wireguard-tools qrencode
+luci-app-fwknopd fwknopd
+luci-app-sqm sqm-scripts sqm-scripts-extra
+luci-app-https-dns-proxy https-dns-proxy
+luci-app-ddns
+luci-app-statistics
+  collectd collectd-mod-cpu collectd-mod-irq collectd-mod-thermal
+  collectd-mod-network collectd-mod-iwinfo collectd-mod-ping
+  collectd-mod-processes collectd-mod-exec
+iptables-mod-geoip
+-ip-tiny ip-full
+zoneinfo-europe
+"
+
+FILES=""
+
+DISABLED_SERVICES=""
