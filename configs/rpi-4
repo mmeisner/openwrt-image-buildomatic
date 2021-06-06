@@ -29,6 +29,7 @@ netperf speedtest-netperf iperf3
 nmap netdiscover arp-scan arp-scan-database
 iptables-mod-geoip
 igmpproxy
+msmtp
 -dnsmasq dnsmasq-full
 -ip-tiny ip-full
 zoneinfo-europe
@@ -37,8 +38,10 @@ curl wget rsync file htop lsof less mc tree usbutils bash
 strace
 openssh-sftp-server
 "
+# disabled packages
 # openssh-server
+
 FILES="rpi-4-files"
 
 DISABLED_SERVICES="\
-adblock banip collectd ddns fwknopd https-dns-proxy igmpproxy netserver sqm"
+adblock banip collectd ddns fwknopd https-dns-proxy igmpproxy netserver sqm unbound"
