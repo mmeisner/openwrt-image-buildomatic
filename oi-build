@@ -101,6 +101,10 @@ init_vars() {
     imagebuilder_dir=${tarball%%.tar*}
 }
 
+todo_action() {
+    echo "${actions}" | grep -q "$1"
+}
+
 fetch_image_builder() {
     echo_note "Downloading ${RELEASE} build from ${url_path}"
 
@@ -229,10 +233,7 @@ Without any options, info is shown for the last image built.
 EOF
 }
 
-do_fetch=""
-do_build=""
-do_write=""
-do_info=""
+actions=""
 dryrun=""
 while [ -n "$1" ]; do
     case $1 in
@@ -243,11 +244,11 @@ while [ -n "$1" ]; do
     -r) RELEASE=$2; shift ;;
     -t) TARGET=$2; shift ;;
     -p) PROFILE=$2; shift ;;
-    -d) do_fetch=yes ;;
-    -b) do_fetch=yes; do_build=yes ;;
-    -i) do_fetch=yes; do_info=yes; ;;
+    -d) actions+="fetch ";;
+    -b) actions+="fetch build " ;;
+    -i) actions+="fetch info " ;;
+    -w) actions+="write " ;;
     -n) dryrun=yes ;;
-    -w) do_write=yes ;;
     -h) usage; exit 0 ;;
     *)
         usage
@@ -258,16 +259,17 @@ while [ -n "$1" ]; do
 done
 
 init_vars
+echo_ok "actions = ${actions}"
 
-[ -n "${do_fetch}" ] &&
+todo_action fetch &&
     fetch_image_builder
 
 echo_run_nodry "cd ${imagebuilder_dir}"
 
-[ -n "${do_build}" ] &&
+todo_action build &&
     image_build
 
-if [ -n "${do_write}" ]; then
+if todo_action write; then
     if [ -d bin/targets/${TARGET} ]; then
         image_write_to_sdcard
     else
@@ -275,7 +277,7 @@ if [ -n "${do_write}" ]; then
     fi
 fi
 
-[ -n "${do_info}" ] && image_builder_make_info
+todo_action info && image_builder_make_info
 
 echo_inv "Final output info"
 
