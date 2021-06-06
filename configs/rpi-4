@@ -8,7 +8,7 @@ TARGET=bcm27xx/bcm2711
 # Currently there is only the "rpi-4" build profile for this TARGET
 PROFILE="rpi-4"
 
-RELEASE="21.02.0-rc1"
+RELEASE=${RELEASE_21_02}
 
 # See https://openwrt.org/packages/start
 #
