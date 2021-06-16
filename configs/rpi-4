@@ -27,6 +27,7 @@ irqbalance
 ethtool
 netperf speedtest-netperf iperf3
 nmap netdiscover arp-scan arp-scan-database
+iftop
 iptables-mod-geoip
 igmpproxy
 msmtp
@@ -34,7 +35,7 @@ msmtp
 -ip-tiny ip-full
 zoneinfo-europe
 procps-ng procps-ng-watch procps-ng-pgrep procps-ng-ps procps-ng-top procps-ng-free
-curl wget rsync file htop lsof less mc tree usbutils bash
+curl wget rsync file htop lsof less mc tree usbutils bash diffutils
 strace
 openssh-sftp-server
 "

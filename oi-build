@@ -233,6 +233,10 @@ Without any options, info is shown for the last image built.
 EOF
 }
 
+# if user does not provide config name, we default to config_name
+load_config common
+load_config ${config_name}
+
 actions=""
 dryrun=""
 while [ -n "$1" ]; do
@@ -263,6 +267,10 @@ echo_ok "actions = ${actions}"
 
 todo_action fetch &&
     fetch_image_builder
+
+if [ -z "${actions}" ] && [ ! -d ${imagebuilder_dir} ]; then
+    die "No action supplied"
+fi
 
 echo_run_nodry "cd ${imagebuilder_dir}"
 
