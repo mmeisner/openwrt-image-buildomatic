@@ -35,6 +35,13 @@ luci-app-statistics
 luci-mod-rpc
 "
 
+packages_unbound="luci-app-unbound unbound-checkconf unbound-anchor unbound-control-setup unbound-host"
+
+packages_sec_dns="
+luci-app-dnscrypt-proxy dnscrypt-proxy-resolvers
+luci-app-https-dns-proxy
+"
+
 # luci-app-nlbwmon nlbwmon
 # luci-app-dnscrypt-proxy
 # luci-theme-material has intentionally been left out (it is rather ugly)
