@@ -8,7 +8,7 @@
 # Latest point release of each main release
 RELEASE_18_06="18.06.9"
 RELEASE_19_07="19.07.7"
-RELEASE_21_02="21.02.0-rc3"
+RELEASE_21_02="21.02.0-rc4"
 
 # Popular Luci apps
 # This list is probably only valid for the 21.02 release

@@ -61,7 +61,7 @@ and devices that the script works with (as of May 2021):
 
   - Releases:
     - *snapshot*    (snapshot, next upcoming release)
-    - *21.02.0-rc1* (release candidate)
+    - *21.02.0-rc4* (release candidate)
     - *19.07*  
   - Some popular devices:
     - *Raspberry Pi 4*
