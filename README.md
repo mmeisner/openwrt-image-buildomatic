@@ -80,13 +80,6 @@ with regard to installing or upgrading your OpenWRT router.
   OpenWRT upgrades often don't normalize upgraded config files in the same
   way from version to version
 
-## Raspberry Pi 4 Network Performance Tuning
-
-  * [(15) BIFRÖST Part 2 - RPi 4B Hybrid Bridging Router - Tuning Linux Network for Gigabit Line Speed | LinkedIn](https://www.linkedin.com/pulse/bifr%C3%B6st-rpi-4b-hybrid-routing-bridge-tuning-linux-network-corner/?trk=read_related_article-card_title)
-    very detailed article about tuning RPi4 network performance using IRQ
-    CPU pinning and other tricks. Kind of a hardwired ues of `irqbalance`
-
-
 ## Post Install Actions
 
 * [[OpenWrt Wiki] UCI defaults](https://openwrt.org/docs/guide-developer/uci-defaults)
@@ -124,6 +117,39 @@ with regard to installing or upgrading your OpenWRT router.
 ## Some Useful OpenWRT Settings
 
 Disable DHCP server on LAN: `uci set dhcp.lan.ignore=1 && uci commit && /etc/init.d/dnsmasq restart`
+
+# Raspberry Pi 4
+
+OpenWRT uses a single (main) partition for both the `/rom` and `rootfs_data`
+and uses a special `mtdsplit` driver to make this sub-partitioning.
+The `/rom` contains a squashfs filesystem with kernel and rootfs and
+`rootfs_data` is where the writable `overlayfs` is mounted:
+[[OpenWrt Wiki] The OpenWrt Flash Layout](https://openwrt.org/docs/techref/flash.layout)
+
+For some reason, on a Raspberry Pi 4, this partition is by default only 104MB.
+This leaves only around 70MB writable space. Run-time re-partitioning is quite
+complicated (contact me if you know how to do it) so that leaves us with
+the only option of building the image with a pre-determined size.
+The `oi-build` script takes the value of `CONFIG_TARGET_ROOTFS_PARTSIZE` as
+the size of the main partition. Make sure that you don't make it larger than
+the SD-card you are using.
+
+NOTE: Contrary to what the OpenWRT Wiki says,
+`CONFIG_TARGET_ROOTFS_PARTSIZE` is ignored by the "make" command-line,
+and you have to set it in the `.config` file instead.
+
+See additional info here from the forum:
+  * [Building a x86-based image and need more disk space in the image - For Developers - OpenWrt Forum](https://forum.openwrt.org/t/building-a-x86-based-image-and-need-more-disk-space-in-the-image/2585/5)
+  * [X86 sysupgrade not working - For Developers - OpenWrt Forum](https://forum.openwrt.org/t/x86-sysupgrade-not-working/37869)
+
+https://forum.openwrt.org/t/x86-sysupgrade-not-working/37869
+
+## Raspberry Pi 4 Network Performance Tuning
+
+  * [(15) BIFRÖST Part 2 - RPi 4B Hybrid Bridging Router - Tuning Linux Network for Gigabit Line Speed | LinkedIn](https://www.linkedin.com/pulse/bifr%C3%B6st-rpi-4b-hybrid-routing-bridge-tuning-linux-network-corner/?trk=read_related_article-card_title)
+    very detailed article about tuning RPi4 network performance using IRQ
+    CPU pinning and other tricks. Kind of a hardwired ues of `irqbalance`
+
 
 # Similar projects
 

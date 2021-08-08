@@ -10,6 +10,13 @@ PROFILE="rpi-4"
 
 RELEASE=${RELEASE_21_02}
 
+# Define this if you want a larger file writable system
+# The default for RPi4 is 104 (MB)
+# Here we set it to 4096 (MB) which is almost 4GB.
+# You must lower the value if your SD-card is smaller than that.
+CONFIG_TARGET_ROOTFS_PARTSIZE=4096
+
+
 # See https://openwrt.org/packages/start
 #
 # - irqbalance package distributes hardware interrupts across

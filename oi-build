@@ -138,6 +138,14 @@ image_build() {
 
     locate_files_dir
 
+    if [ -n "${CONFIG_TARGET_ROOTFS_PARTSIZE}" ]; then
+        local configfile="${imagebuilder_dir}/.config"
+        echo_note "Configuring CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
+        echo_note "by appending to ${configfile}"
+        echo "CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}" \
+            >> .config
+    fi
+
     PACKAGES=$(echo "${PACKAGES}" | tr '\n' ' ')
     echo_run "make image PROFILE='${PROFILE}' FILES='${FILES}' PACKAGES='${PACKAGES}' DISABLED_SERVICES='${DISABLED_SERVICES}'" ||
         die "image build FAILED"
@@ -299,4 +307,13 @@ fi
 if [ -d bin/targets/${TARGET} ]; then
     echo_run "ls -lh bin/targets/${TARGET}/"
     echo_note "Final images are in ${imagebuilder_dir}/bin/targets/${TARGET}"
+    cat << EOF
+Run following commands to perform a system upgrade:
+  scp FILE.img.gz HOST:/tmp
+  ssh HOST '/sbin/sysupgrade -v /tmp/*.img.gz'
+
+For example:
+  scp openwrt-imagebuilder-21.02.0-rc3-bcm27xx-bcm2711.Linux-x86_64/bin/targets/bcm27xx/bcm2711/openwrt-21.02.0-rc3-bcm27xx-bcm2711-rpi-4-ext4-sysupgrade.img.gz 192.168.1.1:/tmp
+  ssh 192.168.1.1 '/sbin/sysupgrade -v /tmp/*.img.gz'
+EOF
 fi
