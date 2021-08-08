@@ -58,6 +58,6 @@ kmod-usb-net-rtl8152 kmod-usb-net-sr9700
 packages_usb_storage="
 kmod-fs-exfat kmod-fs-ext4 kmod-fs-ntfs kmod-fuse kmod-usb-storage
 kmod-usb2 kmod-usb2-pci kmod-usb3 kmod-fs-autofs4 kmod-usb-ohci kmod-usb-uhci
-block-mount blockd e2fsprogs fdisk
+block-mount blockd e2fsprogs fdisk lsblk resize2fs losetup
 "
 
