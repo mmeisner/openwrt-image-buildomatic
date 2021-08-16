@@ -106,7 +106,8 @@ todo_action() {
 }
 
 fetch_image_builder() {
-    echo_note "Downloading ${RELEASE} build from ${url_path}"
+    echo_note "Downloading ${RELEASE} build from:
+    ${openwrt_url}/${url_path}"
 
     if [ -f "${tarball}" ]; then
         echo_ok "${tarball} already exists, skipping fetch"
@@ -141,7 +142,7 @@ image_build() {
     if [ -n "${CONFIG_TARGET_ROOTFS_PARTSIZE}" ]; then
         local configfile="${imagebuilder_dir}/.config"
         echo_note "Configuring CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}"
-        echo_note "by appending to ${configfile}"
+        echo_note "    by appending to ${configfile}"
         echo "CONFIG_TARGET_ROOTFS_PARTSIZE=${CONFIG_TARGET_ROOTFS_PARTSIZE}" \
             >> .config
     fi
@@ -196,6 +197,40 @@ image_write_to_sdcard() {
   bs=1M status=progress && sync"
     [ "${realdev}" = "USB_STORAGE" ] && \
         echo "where USB_STORAGE is the USB storage device"
+}
+
+show_output_info() {
+    echo_inv "Final output info"
+
+    if ls ${imagebuilder_dir}/build_dir/target-*/root* >/dev/null; then
+        echo_note "Original and modified rootfs is here:"
+        echo_run "ls -d1 ${imagebuilder_dir}/build_dir/target-*/root*"
+    fi
+
+    if [ -d ${imagebuilder_dir}/bin/targets/${TARGET} ]; then
+        echo_note "Final images are in ${imagebuilder_dir}/bin/targets/${TARGET}"
+        echo_run "(cd ${imagebuilder_dir}/bin/targets/${TARGET} && find . -name '*.bin' -o -name '*.img*' |xargs ls -lh)"
+        echo_note "sysupgrade images:"
+        echo_run "ls -1 ${imagebuilder_dir}/bin/targets/${TARGET}/*-sysupgrade.{bin,img.gz}* 2>/dev/null"
+
+        # determine most likely sysupgrade file (squashfs) and its suffix
+        file_sysupgrade_squashfs="$(find ${imagebuilder_dir}/bin/targets/${TARGET} -name '*-squashfs-sysupgrade.bin' -o -name '*-squashfs-sysupgrade.img.gz')"
+        file_suffix=$(echo ${file_sysupgrade_squashfs} | sed -r "s/.*-sysupgrade.(.*)/\1/")
+
+        echo_note "Run following commands to perform a system upgrade:"
+        cat << EOF
+  scp FILE.img.gz HOST:/tmp
+  ssh HOST '/sbin/sysupgrade -v /tmp/*.img.gz'
+EOF
+        echo_note "For example (for current config, ${config_name}):"
+        cat << EOF
+  scp ${file_sysupgrade_squashfs} 192.168.1.1:/tmp
+  ssh 192.168.1.1 '/sbin/sysupgrade -v /tmp/*.${file_suffix}'
+EOF
+    else
+        echo_bold "directory not found: ${imagebuilder_dir}/bin/targets/${TARGET}"
+        echo_bold "which means we built nothing!?"
+    fi
 }
 
 ###############################################################################
@@ -295,25 +330,5 @@ fi
 
 todo_action info && image_builder_make_info
 
-echo_inv "Final output info"
-
-if ls ./build_dir/target-*/root* >/dev/null; then
-    cd ..
-    echo_note "Original and modified rootfs is here:"
-    echo_run "ls -d1 ${imagebuilder_dir}/build_dir/target-*/root*"
-    cd - >/dev/null
-fi
-
-if [ -d bin/targets/${TARGET} ]; then
-    echo_run "ls -lh bin/targets/${TARGET}/"
-    echo_note "Final images are in ${imagebuilder_dir}/bin/targets/${TARGET}"
-    cat << EOF
-Run following commands to perform a system upgrade:
-  scp FILE.img.gz HOST:/tmp
-  ssh HOST '/sbin/sysupgrade -v /tmp/*.img.gz'
-
-For example:
-  scp openwrt-imagebuilder-21.02.0-rc3-bcm27xx-bcm2711.Linux-x86_64/bin/targets/bcm27xx/bcm2711/openwrt-21.02.0-rc3-bcm27xx-bcm2711-rpi-4-ext4-sysupgrade.img.gz 192.168.1.1:/tmp
-  ssh 192.168.1.1 '/sbin/sysupgrade -v /tmp/*.img.gz'
-EOF
-fi
+echo_run_nodry "cd .."
+show_output_info
