@@ -57,11 +57,11 @@ page, *prebuilt snapshot images do not come with any web interface or GUI*.
 This means that `PACKAGES` should at least contain `luci` if you want the web GUI!
 
 Here are some of the OpenWRT [Release Builds](https://openwrt.org/releases/start)
-and devices that the script works with (as of May 2021):
+and devices that the script works with (as of Sep 2021):
 
   - Releases:
     - *snapshot*    (snapshot, next upcoming release)
-    - *21.02.0-rc4* (release candidate)
+    - *21.02.0*
     - *19.07*  
   - Some popular devices:
     - *Raspberry Pi 4*
