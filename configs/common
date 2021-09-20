@@ -17,22 +17,22 @@ RELEASE_21_02="21.02.0"
 packages_luci_apps="
 luci
 luci-theme-openwrt-2020 luci-theme-bootstrap luci-theme-openwrt
-luci-app-uhttpd
-luci-app-commands
-luci-app-wireguard kmod-wireguard wireguard-tools qrencode
 luci-app-acme acme ca-certificates
 luci-app-adblock adblock
-luci-app-fwknopd fwknopd
 luci-app-banip banip
-luci-app-sqm sqm-scripts sqm-scripts-extra
-luci-app-https-dns-proxy https-dns-proxy
+luci-app-commands
 luci-app-ddns
+luci-app-fwknopd fwknopd
+luci-app-https-dns-proxy https-dns-proxy
+luci-mod-rpc
+luci-app-sqm sqm-scripts sqm-scripts-extra
 luci-app-statistics
   collectd collectd-mod-cpu collectd-mod-irq collectd-mod-thermal
   collectd-mod-network collectd-mod-sqm collectd-mod-iwinfo collectd-mod-ping
   collectd-mod-ethstat
   collectd-mod-processes collectd-mod-exec
-luci-mod-rpc
+luci-app-uhttpd
+luci-app-wireguard kmod-wireguard wireguard-tools qrencode
 "
 
 packages_unbound="luci-app-unbound unbound-checkconf unbound-anchor unbound-control-setup unbound-host"
