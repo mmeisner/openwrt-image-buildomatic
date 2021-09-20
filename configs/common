@@ -32,6 +32,7 @@ luci-app-statistics
   collectd-mod-ethstat
   collectd-mod-processes collectd-mod-exec
 luci-app-uhttpd
+luci-app-vpn-policy-routing
 luci-app-wireguard kmod-wireguard wireguard-tools qrencode
 "
 
