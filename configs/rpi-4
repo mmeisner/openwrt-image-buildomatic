@@ -34,7 +34,7 @@ irqbalance
 ethtool
 netperf speedtest-netperf iperf3
 nmap netdiscover arp-scan arp-scan-database
-iftop
+ss iftop
 iptables-mod-geoip
 igmpproxy
 msmtp
