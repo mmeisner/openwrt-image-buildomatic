@@ -61,3 +61,7 @@ kmod-usb2 kmod-usb2-pci kmod-usb3 kmod-fs-autofs4 kmod-usb-ohci kmod-usb-uhci
 block-mount blockd e2fsprogs fdisk lsblk resize2fs losetup
 "
 
+# Total size of python-light plus python3-urllib is approximately 10MB
+# 3.1M  /usr/lib/libpython3.9.so.1.0
+# 6.6M	/usr/lib/python3.9/lib-dynload/*.so
+packages_python="python3-light python3-urllib"

@@ -29,6 +29,7 @@ PACKAGES="
 ${packages_usb_eth}
 ${packages_luci_apps}
 ${packages_usb_storage}
+${packages_python}
 bcm27xx-eeprom
 irqbalance
 ethtool
