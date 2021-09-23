@@ -12,10 +12,11 @@ RELEASE_21_02="21.02.0"
 
 # Popular Luci apps
 # This list is probably only valid for the 21.02 release
-#
-#  luci-mod-rpc is for remote control, see https://openwrt.org/docs/techref/ubus
+#   - luci-theme-material has intentionally been left out (it is rather ugly)
+#   - luci-mod-rpc is for remote control, see https://openwrt.org/docs/techref/ubus
 packages_luci_apps="
 luci
+luci-mod-rpc
 luci-theme-openwrt-2020 luci-theme-bootstrap luci-theme-openwrt
 luci-app-acme acme ca-certificates
 luci-app-adblock adblock
@@ -24,7 +25,6 @@ luci-app-commands
 luci-app-ddns
 luci-app-fwknopd fwknopd
 luci-app-https-dns-proxy https-dns-proxy
-luci-mod-rpc
 luci-app-sqm sqm-scripts sqm-scripts-extra
 luci-app-statistics
   collectd collectd-mod-cpu collectd-mod-irq collectd-mod-thermal
@@ -45,7 +45,6 @@ luci-app-https-dns-proxy
 
 # luci-app-nlbwmon nlbwmon
 # luci-app-dnscrypt-proxy
-# luci-theme-material has intentionally been left out (it is rather ugly)
 
 # All the most common USB Ethernet adapter kernel drivers
 packages_usb_eth="
