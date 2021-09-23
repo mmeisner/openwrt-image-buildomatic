@@ -202,6 +202,12 @@ image_write_to_sdcard() {
 show_output_info() {
     echo_inv "Final output info"
 
+    manifest="$(ls ${imagebuilder_dir}/bin/targets/${TARGET}/*.manifest)"
+    if ls ${imagebuilder_dir}/build_dir/target-*/root* >/dev/null; then
+        echo_note "Image manifest is here:"
+        echo "    ${manifest}"
+    fi
+
     if ls ${imagebuilder_dir}/build_dir/target-*/root* >/dev/null; then
         echo_note "Original and modified rootfs is here:"
         echo_run "ls -d1 ${imagebuilder_dir}/build_dir/target-*/root*"
