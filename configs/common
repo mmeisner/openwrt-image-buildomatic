@@ -21,6 +21,7 @@ luci-theme-openwrt-2020 luci-theme-bootstrap luci-theme-openwrt
 luci-app-acme acme ca-certificates
 luci-app-adblock adblock
 luci-app-banip banip
+luci-app-bcp38
 luci-app-commands
 luci-app-ddns
 luci-app-fwknopd fwknopd
@@ -34,6 +35,7 @@ luci-app-statistics
 luci-app-uhttpd
 luci-app-vpn-policy-routing
 luci-app-wireguard kmod-wireguard wireguard-tools qrencode
+luci-app-wol
 "
 
 packages_unbound="luci-app-unbound unbound-checkconf unbound-anchor unbound-control-setup unbound-host"
