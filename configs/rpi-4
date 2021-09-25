@@ -43,9 +43,10 @@ msmtp
 -ip-tiny ip-full
 zoneinfo-europe
 procps-ng procps-ng-watch procps-ng-pgrep procps-ng-ps procps-ng-top procps-ng-free
-curl wget rsync file htop lsof less mc tree usbutils bash diffutils
+curl wget rsync file htop lsof less mc tree usbutils bash diffutils libreadline
 strace
 openssh-sftp-server
+luci-app-lxc
 "
 # disabled packages
 # openssh-server
