@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# see https://github.com/openwrt/luci/issues/5073
+file=/www/luci-static/resources/view/fwknopd.js
+sed -i "s/s:option/s.option/" ${file}
