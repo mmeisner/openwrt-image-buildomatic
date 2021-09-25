@@ -54,4 +54,5 @@ luci-app-lxc
 FILES="rpi-4-files"
 
 DISABLED_SERVICES="\
-adblock banip collectd ddns fwknopd https-dns-proxy igmpproxy netserver sqm unbound"
+adblock acme banip bcp38 collectd ddns fwknopd https-dns-proxy \
+igmpproxy netserver sqm unbound vpn-policy-routing"
