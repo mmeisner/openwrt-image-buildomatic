@@ -1,10 +1,11 @@
 #!/bin/sh
 
 # Read all about UCI defaults at
-# https://openwrt.org/docs/guide-developer/uci-defaults)
+# https://openwrt.org/docs/guide-developer/uci-defaults
 
 # Note that scripts in /etc/uci-defaults will get executed at *every* first
 # boot (i.e. after both factory install as well as upgrades),
 # possibly overwriting already existing values!
+# scripts in this dir should *not* be executable
 
 exit 0

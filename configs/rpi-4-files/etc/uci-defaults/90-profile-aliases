@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# add some commonly used aliases
+file=/etc/profile
+grep -q "alias l" ${file} ||
+    cat <<EOF >> ${file}
+alias l='ls -lF'
+alias la='ls -alF'
+EOF
