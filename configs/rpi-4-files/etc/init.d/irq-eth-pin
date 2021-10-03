@@ -3,22 +3,25 @@
 uci_banirq=irqbalance.irqbalance.banirq
 cpu_irq_eth=2
 
-# Move eth0 IRQs to CPU1 (numbered 1-4 when writing)
-# And ban irqbalance from messing with it
-# The USB3 Ethernet IRQs cannot be moved and must stay on CPU0
-irqs_eth0=$(sed -rn "s/^\s*([0-9]+):.*eth0$/\1/p" /proc/interrupts)
+move_eth0_irq() {
+    # Move eth0 IRQs to CPU1 (numbered 1-4 when writing)
+    # And ban irqbalance from messing with it
+    # The USB3 Ethernet IRQs cannot be moved and must stay on CPU0
+    irqs_eth0=$(sed -rn "s/^\s*([0-9]+):.*eth0$/\1/p" /proc/interrupts)
 
-for n in ${irqs_eth0}; do
-    echo ${cpu_irq_eth} > /proc/irq/${n}/smp_affinity
-    if ! uci get ${uci_banirq} | grep -q ${n}; then
-        uci add_list ${uci_banirq}=${n}
-    fi
-done
-uci commit
+    for n in ${irqs_eth0}; do
+        echo ${cpu_irq_eth} > /proc/irq/${n}/smp_affinity
+        if ! uci get ${uci_banirq} | grep -q ${n}; then
+            uci add_list ${uci_banirq}=${n}
+        fi
+    done
+    uci commit irqbalance
 
-logger -t "irq_eth_pin" "Moved eth0 IRQs ${irqs_eth0} to cpu${cpu_irq_eth}"
+    logger -t "irq_eth_pin" "Moved eth0 IRQs ${irqs_eth0} to cpu${cpu_irq_eth}"
+    logger -t "irq_eth_pin" "See all interrupts with: cat /proc/interrupts"
+}
 
-softirqs_move() {
+move_softirqs() {
     # Move softirqs for network traffic to CPU2 and CPU3
     # Maybe not a brilliant idea because the softirqs are probably better off
     # being processed on the CPU that got the original IRQ
@@ -33,4 +36,8 @@ softirqs_move() {
             fi
         done
     done
+}
+
+start_service() {
+    move_eth0_irq
 }
