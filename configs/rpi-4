@@ -13,7 +13,10 @@ RELEASE=${RELEASE_21_02}
 # Define this if you want a larger file writable system
 # The default for RPi4 is 104 (MB)
 # Here we set it to 4096 (MB) which is almost 4GB.
-# You must lower the value if your SD-card is smaller than that.
+# Alas, the larger it is, the longer time it takes to create the image:
+#   1GB takes 1m54s, 2GB takes 2m14s, 4GB takes 2m56s
+#   which amounts to approx 20s extra build time per GB
+# You must lower the value if your SD-card is smaller than that (surely not)
 CONFIG_TARGET_ROOTFS_PARTSIZE=4096
 
 
