@@ -23,16 +23,20 @@ else
     PROFILE="tplink_archer-c7-v2"
 fi
 
-# This package list works for releases 18.06, 19.07 aND 21.02
+# This package list works for releases 18.06, 19.07 and 21.02
 PACKAGES="
-luci
+luci htop \
+"
+
+# List of packages that are typically interesting but aren't being installed
+# because I just want a minimal install only with web UI
+# (the NOT_INSTALLED variable is completely ignored by the oi-build script)
+NOT_INSTALLED="
 luci-theme-bootstrap luci-theme-openwrt
 luci-app-uhttpd
 luci-app-wireguard kmod-wireguard wireguard-tools qrencode
 luci-app-fwknopd fwknopd
 luci-app-sqm sqm-scripts sqm-scripts-extra
-luci-app-https-dns-proxy https-dns-proxy
-luci-app-ddns
 luci-app-statistics
   collectd collectd-mod-cpu collectd-mod-irq collectd-mod-thermal
   collectd-mod-network collectd-mod-iwinfo collectd-mod-ping
