@@ -67,3 +67,17 @@ block-mount blockd e2fsprogs fdisk lsblk resize2fs losetup
 # 3.1M  /usr/lib/libpython3.9.so.1.0
 # 6.6M	/usr/lib/python3.9/lib-dynload/*.so
 packages_python="python3-light python3-urllib"
+
+# List below taken from
+# https://forum.openwrt.org/t/openwrt-arm64-quick-lxc-howto-guide-lms-in-debian-system-in-lxc-container/99835
+packages_lxc="
+xz tar gnupg \
+kmod-ikconfig kmod-veth \
+cgroupfs-mount cgroup-tools \
+gnupg-utils gnupg2-dirmngr \
+luci-app-lxc liblxc lxc lxc-attach lxc-auto lxc-autostart lxc-cgroup lxc-checkconfig \
+lxc-common lxc-config lxc-configs lxc-console lxc-copy lxc-create lxc-destroy \
+lxc-device lxc-execute lxc-freeze lxc-hooks lxc-info lxc-init lxc-ls lxc-monitor \
+lxc-monitord lxc-snapshot lxc-start lxc-stop lxc-templates lxc-top lxc-unfreeze \
+lxc-unprivileged lxc-unshare lxc-user-nic lxc-usernsexec lxc-wait rpcd-mod-lxc \
+"

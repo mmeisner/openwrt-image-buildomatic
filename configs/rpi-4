@@ -33,6 +33,7 @@ ${packages_usb_eth}
 ${packages_luci_apps}
 ${packages_usb_storage}
 ${packages_python}
+${packages_lxc}
 bcm27xx-eeprom
 irqbalance
 ethtool
@@ -49,7 +50,6 @@ procps-ng procps-ng-watch procps-ng-pgrep procps-ng-ps procps-ng-top procps-ng-f
 curl wget rsync file htop lsof less mc tree usbutils bash diffutils libreadline
 strace
 openssh-sftp-server
-luci-app-lxc
 "
 # disabled packages
 # openssh-server
