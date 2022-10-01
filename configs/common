@@ -8,7 +8,8 @@
 # Latest point release of each main release
 RELEASE_18_06="18.06.9"
 RELEASE_19_07="19.07.7"
-RELEASE_21_02="21.02.0"
+RELEASE_21_02="21.02.3"
+RELEASE_22_03="22.03.0"
 
 # Popular Luci apps
 # This list is probably only valid for the 21.02 release
@@ -20,7 +21,6 @@ luci-mod-rpc
 luci-theme-openwrt-2020 luci-theme-bootstrap luci-theme-openwrt
 luci-app-acme acme ca-certificates
 luci-app-adblock adblock
-luci-app-banip banip
 luci-app-bcp38
 luci-app-commands
 luci-app-ddns
@@ -36,6 +36,11 @@ luci-app-uhttpd
 luci-app-vpn-policy-routing
 luci-app-wireguard kmod-wireguard wireguard-tools qrencode
 luci-app-wol
+"
+
+# Packages only working on OpenWRT 21.02.x
+packages_21_02_luci_apps="\
+luci-app-banip banip \
 "
 
 packages_unbound="luci-app-unbound unbound-checkconf unbound-anchor unbound-control-setup unbound-host"

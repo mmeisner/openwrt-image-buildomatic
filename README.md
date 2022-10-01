@@ -1,6 +1,4 @@
-% OpenWRT Image Buildomatic
-
-# Overview
+# OpenWRT Image Buildomatic
 
 This shell script uses the official
 [OpenWrt Image Builder](https://openwrt.org/docs/guide-user/additional-software/imagebuilder)
@@ -19,11 +17,9 @@ OpenWRT image, you just need these three lines:
 insert it into your RPi4 and run your Internet connection with 940Mbps
 throughput, with Wireguard.
 
-As the saying goes: The cool guys build from source, the impatient guys
-use the image builder.
-
-See the device configuration files in the `configs` folder for how simple
-it is.
+See the device configuration files in the
+[configs](https://github.com/mmeisner/openwrt-image-buildomatic/tree/main/configs)
+folder for how simple the configuration is.
 
 ## The OpenWRT Image Builder
 
@@ -39,7 +35,7 @@ this script adds, is automated download and execution of the image builder
 textual file (actually merely a shell script with a few variables).
 In the configuration file you can specify:
 
-  - **`RELEASE`** is the release to use, e.g. `21.02-rc1`, `19.07`, `snapshot`, etc.  
+  - **`RELEASE`** is the release to use, e.g. `22.03`, `21.02-rc1`, `19.07`, `snapshot`, or whatever
   - **`TARGET`** is the CPU architecture such as *`x86`*,
     *`ath79`* (for Archer C7), *`bcm27xx`* (for Raspberry PI), etc.
   - **`PROFILE`** is the device name to make an image for e.g. *`rpi4`* or *`archer-c7-v2`*
@@ -57,11 +53,12 @@ page, *prebuilt snapshot images do not come with any web interface or GUI*.
 This means that `PACKAGES` should at least contain `luci` if you want the web GUI!
 
 Here are some of the OpenWRT [Release Builds](https://openwrt.org/releases/start)
-and devices that the script works with (as of Sep 2021):
+and devices that the script works with (as of Sep 2022):
 
   - Releases:
     - *snapshot*    (snapshot, next upcoming release)
-    - *21.02.0*
+    - *22.03*
+    - *21.02*
     - *19.07*  
   - Some popular devices:
     - *Raspberry Pi 4*
