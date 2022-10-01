@@ -282,18 +282,11 @@ Without any options, info is shown for the last image built.
 EOF
 }
 
-# if user does not provide config name, we default to config_name
-load_config common
-load_config ${config_name}
-
 actions=""
 dryrun=""
 while [ -n "$1" ]; do
     case $1 in
-    -c) config_name=$2; shift
-        load_config common
-        load_config ${config_name}
-        ;;
+    -c) config_name=$2; shift ;;
     -r) RELEASE=$2; shift ;;
     -t) TARGET=$2; shift ;;
     -p) PROFILE=$2; shift ;;
@@ -310,6 +303,9 @@ while [ -n "$1" ]; do
     esac
     shift
 done
+
+load_config common
+load_config ${config_name}
 
 init_vars
 echo_ok "actions = ${actions}"
